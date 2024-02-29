@@ -1,4 +1,3 @@
-// import 'express-async-errors';
 import express, { ErrorRequestHandler, NextFunction } from 'express'
 import connectDB from './config/db.config'
 import todoRoutes from './routes/link.routes'
@@ -8,7 +7,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 const port = process.env.PORT || 3000
-app.use('/api/v1', todoRoutes)
+app.use(todoRoutes)
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     const statusCode = res.statusCode === 200 ? 500 : res.statusCode;

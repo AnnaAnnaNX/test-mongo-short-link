@@ -2,8 +2,8 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "target": "es6",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
     "outDir": "dist",
     "sourceMap": false,
     "baseUrl": ".",

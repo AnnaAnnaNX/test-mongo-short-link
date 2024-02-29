@@ -1,18 +1,24 @@
-import {Link} from "../models/link.model";
-import * as Nanoid from 'nanoid'
+import { Link } from "../models/link.model";
 import {StatusCodes } from 'http-status-codes'
 import {NextFunction, Request, Response} from 'express'
+const prefix = process.env.BASE_URL || 'http://localhost:3000/'
 
 class LinkController {
     createShortLink = async (req: Request, res: Response, next: NextFunction)=> {
         try {
-            const {link} = req.body
+            const { link } = req.body
             if (!link) {
                 throw new Error('Link must be provided')
             }
-            const newLink = await Link.create({ name: Nanoid.nanoid(), fullLink: link })
-            // const newLink = await Link.create({name: '123', fullLink: link})
-            res.status(StatusCodes.CREATED).json(newLink)
+            if (await Link.findOne({ fullLink: link })) {
+                throw new Error('Duplicate link')
+            }
+            const name = Math.random().toString(36).substr(2, 4)
+            if (await Link.findOne({ name })) {
+                throw new Error('Ошибка при генериации имени ссылки')
+            }
+            const newLink = await Link.create({ name, fullLink: link })
+            res.status(StatusCodes.CREATED).json(`${prefix}${name}`)
         } catch (e) {
             next(e)
         }
@@ -30,7 +36,7 @@ class LinkController {
     }
     goto = async (req: Request, res: Response, next: NextFunction)=> {
         try {
-            const {shortLink} = req.params
+            const { shortLink} = req.params
             const link = await Link.findOne({name: shortLink})
             if (!link || !link.fullLink) {
                 throw new Error('not found link')
